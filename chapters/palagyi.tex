@@ -1,0 +1,42 @@
+\chapter{Skeletonización por Adelgazamiento Topológico Paralelo}
+\label{ch:palagyi}
+
+El primer algoritmo implementado para esta tesis fue presentado por Palágyi et al. en \cite{palagyi1999parallel}. Este algoritmo simula la metáfora del incendio de Blum eliminando vóxeles del contorno del objeto hasta transformarlo en el \textit{skeleton}. La secuencia de eliminación no es arbitraria, sino que está determinada por máscaras. Un vóxel es eliminado si su vecindad calza con alguna máscara, es decir, si satisface cierto patrón. En general, los algoritmos que siguen una estrategia similar son referidos como ''algoritmos de adelgazamiento topológico'', porque cada operación de eliminación va haciendo más delgado el objeto sin alterar su topología. En otras palabras, una condición mínima para las máscaras es que solamente vóxeles simples sean eliminados y se preserven los vóxeles de término.
+
+Este algoritmo se dice además ''paralelo'' porque todos los vóxeles que calzan con cualquier máscara pueden ser eliminados simultáneamente. Sin embargo, a diferencia de los algoritmos de adelgazamiento ''totalmente paralelos'', las máscaras deben aplicarse varias veces en cada paso, rotadas en distintas direcciones. La mayoría de los algoritmos paralelos y totalmente paralelos usa 6 rotaciones, pero Este algoritmo en particular usa 12 rotaciones, o ''subiteraciones''.
+
+\section{Fundamentos teóricos}
+
+
+
+\subsection{La transformada \textit{hit-and-miss}}
+
+\section{Visión general del algoritmo}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1} %do-while definicion jeje no se por que funciona
+
+\begin{algorithm}[H]
+\caption{Adelgazamiento topológico paralelo de Palágyi et al.}
+\label{alg:thinning}
+\begin{algorithmic}[1]
+\Function{Adelgazamiento}{$I$}
+	\State $masks \gets InitMasks()$
+	\State $rotations \gets InitRotations()$
+	\State $skel \gets I$
+  	\Do
+    	\State $prevSkel \gets skel$
+    	\ForAll {$mask \in masks$}
+        	\ForAll {$rotation \in rotations$}
+            	\State $rotatedMask \gets rotate(mask, rotation)$
+        		\State $skel \gets hitAndMiss(skel, rotatedMask)$
+            \EndFor
+        \EndFor
+  	\doWhile{$prevSkel \neq skel$}
+    \State \Return $skel$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+En resumen, este algoritmo sencillamente aplica a la imagen original todas las máscaras, rotadas en cada una de las 12 rotaciones predefinidas, hasta que no se observen cambios.
+
+\section{Las máscaras}

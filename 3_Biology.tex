@@ -1,0 +1,93 @@
+\chapter{El \textit{skeleton} en biología}
+\label{ch:metrics}
+
+Según lo señalado en el Capítulo \ref{ch:introduction}, toda comparación de algoritmos de cálculo del \textit{skeleton} debe hacerse en cuanto al uso del \textit{skeleton} en alguna aplicación específica. Este capítulo es una revisión de la aplicación del \textit{skeleton} que motiva este trabajo de tesis.
+
+
+
+Sacar la justificación de aquí:
+Neuromantic – from semi-manual to semi-automatic reconstruction of neuron morphology
+salen los tipos de trazados y blabla, el que interesa es el automatico
+
+Simple Neurite tracer \cite{longair2011simple} es el de ImageJ asistido, donde se seleccionan los start y end points y advina el camino -esto no importa mucho
+
+skeleton es parte central del proceso, porque despues se analiza con analize skel
+
+
+en neurite tracer tambien skeletonizan sin decir como
+
+
+
+\cite{schmitz2011automated} To calculate dendrite length, the dendrite mask is skeletonized
+using MATLAB’s built in bwmorph function to obtain a single-pixel
+representation
+
+
+\cite{ho2011neurphologyj} 2D propone un método basado en algoritmos misteriosos de ImageJ, incluyendo misterioso metodo "skeletonize", y se compara contra simple Neurite tracer - es bueno que incluye un resumen de los paquetes comerciales
+
+\cite{pani2014morphoneuronet} "was skeletonized"
+
+\cite{billeci2013neuronmorphological} The techniques used for skeletonization are standard and therefore not described in detail
+
+
+
+Usan una implementación del algoritmo de thinning de \cite{lee1994building} en 2d y 3d, que es parecido al de palagyi pero con arbol de decision.
+
+Además en algunos papers se comparan con otros algoritmos, indicando las cosas que importan, como el largo promedio de las neuritas. sacar de aqui la justificacion
+
+\subsection{Métricas de comparación}
+
+El \textit{skeleton} puede verse como un grafo no dirigido \cite{bai2008path}. Tomando esta idea, propondremos métricas provenientes en su mayoría de la teoría de grafos. Separaremos los objetos en dos tipos: objetos con túneles \cite{svensson2003finding} y objetos sin túneles. Las métricas dependerán del tipo de objeto, notando que el \textit{skeleton} de un objeto con túneles y el de uno sin túneles se parecen a un grafo cíclico y a un árbol respectivamente.
+
+\subsubsection{Métricas para objetos con túneles}
+
+\begin{itemize}
+\item Número de nodos
+\item Número de arcos
+\item Número de ciclos
+\item Distribución de longitud de arcos
+\item Volúmen \footnote{Número de vóxeles del \textit{skeleton}}
+\end{itemize}
+
+\subsubsection{Métricas para objetos sin túneles}
+
+\begin{itemize}
+\item Número de nodos
+\item Número de arcos
+\item Largo del camino máximo
+\item Distribución de longitud de arcos
+\item Distribución de ángulos de bifurcación
+\item Asimetría \footnote{Valor entre 0 y 1 que cuantifica el balance de un árbol. Vale 0 para un árbol perfectamente balanceado y 1 para un árbol con todos sus subárboles completamente desbalanceados. Se define como:
+\[
+A = \frac{1}{N}\sum A_{p}(r_{izq},r_{der})
+\]
+Esto corresponde a calcular el promedio de las asimetrías de todos los subárboles del \textit{skeleton} \cite{van2004morphological}.}
+\item Volúmen
+\end{itemize}
+
+\subsection{Datos}
+
+No se cuenta con objetos con \textit{skeletons} conocidos. por lo que generaremos objetos con y sin túneles para medir el desempeño de los algoritmos. Como se ha señalado anteriormente, también se contempla una verificación con expertos para validar las métricas al ser calculadas en \textit{skeletons} extraídos desde objetos reales.
+
+\subsubsection{Datos Generados}
+
+En SCIAN-Lab se han implementado generadores de \textit{skeletons} con y sin ciclos \cite{villarroel2012}. De este modo, para estos datos se cuenta con la \textit{ground truth} para determinar el error que cada algoritmo tiene en cada métrica.
+
+\subsubsection{Datos Reales}
+
+SCIAN-Lab cuenta con decenas de volúmenes y mallas geométricas de estructuras biológicas correctamente segmentadas. No obstante, el \textit{skeleton} de estos objetos es desconocido, por lo que la validación de las métricas requerirá la evaluación por parte de expertos en el área, a través de, por ejemplo, un cuestionario.
+
+También será ilustrativo calcular las métricas para objetos de las principales bases de datos de uso público comúnmente usadas en este problema, notablemente la Princeton Shape Benchmark Database \cite{shilane2004princeton}.
+
+\section{Tabla de resultados}
+
+\begin{center}
+    \begin{tabular}{ | l | c | c |}
+    \hline
+    Algoritmo & Número de nodos & Número de arcos \\ \hline
+    Palàgyi et al.& 100 & 200 \\ \hline
+    Arcelli et al.& 100 & 200 \\ \hline
+    Siddiqi et al.& 100 & 200 \\ \hline
+    Au et al.& 100 & 200 \\ \hline
+    \end{tabular}
+\end{center}

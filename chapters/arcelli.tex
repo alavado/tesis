@@ -1,0 +1,221 @@
+\chapter{Skeletonización basada en distancia}
+\label{ch:arcelli}
+
+El tercer algoritmo implementado para esta tesis fue presentado por Arcelli et al. en \cite{arcelli2011distance}. Este algoritmo  de los otros dos porque utiliza la segunda definición del \textit{skeleton} presentada en el Capítulo \ref{ch:introduction}. En lugar de incendiar los objetos, el \textit{skeleton} es calculado a partir de los centros de discos o bolas maximales inscritas en el objeto.
+
+El algoritmo cuya implementación se detalla en esta capítulo fue concebido para calcular el \textit{skeleton} de imágenes 3D. Para adquirir familiaridad con las técnicas usadas, se comenzó por implementar el algoritmo para imágenes 2D basado en discos maximales que aparece en \cite{di1996skeletonization}. Este algoritmo 2D calcula el \textit{skeleton} siguiendo principios parecidos al algoritmo 3D de este capítulo, pero su enfoque en imágenes bidimensionales le concede una relativa sencillez. En los anexos se han dedicado unas palabras a esa versión. La principal diferencia con la versión 3D está en la detección de puntos de bifurcación. No existe un equivalente para vóxeles del número de cruce de Hilditch \cite{hilitch1969linear}.
+
+\section{Fundamentos teóricos}
+
+\subsection{Transformadas de distancia}
+
+Una \textit{transformada de distancia} de una imagen es un mapeo donde a cada píxel o vóxel de objeto se le asigna la distancia al píxel o vóxel de fondo más cercano. Los píxeles o vóxeles de fondo se mapean al valor constante 0 \footnote{A veces los elementos de fondo son mapeados a otros valores, como por ejemplo a $\infty$, pero para los algoritmos de esta tesis se usa siempre 0.}. En otras palabras, la transformada de distancia es una matriz con las mismas dimensiones que su imagen correspondiente. Si un elemento de la imagen vale 0, en su mismo índice dentro de la transformada de distancia aparecerá un 0. Si un elemento de la imagen vale 1, en su mismo índice dentro de la transformada de distancia aparecerá algún valor positivo que indique la distancia entre ese elemento y el elemento con valor 0 más cercano. Estos valores positivos dependerán de cómo se mida la distancia entre dos elementos.
+
+Fue necesario esbozar el concepto de transformada de distancia para explicar el algoritmo del Capítulo \ref{ch:siddiqi}. Dentro de ese algoritmo, el cálculo de la transformada de distancia euclidiana era el primer paso para el cálculo del \textit{skeleton}. Las operaciones subsecuentes eran de carácter global. En contraste, la métrica euclidiana no es adecuada para determinar localmente si un vóxel corresponde al centro de una bola maximal. La transformada de distancia euclidiana busca ser exacta, por lo que no impone ninguna restricción para los valores que corresponden a vóxeles vecinos \cite{borgefors1991euclidean}. A pesar de esto, se han propuesto algunos algoritmos que la usan, como \cite{remy2003look}, basado en tablas de consulta con todos los valores posibles.
+
+El algoritmo de este capítulo usa una transformada más amigable en el sentido anterior. Es parte de la familia de transformadas de distancia que se describe a continuación.
+
+\subsection{La transformada de distancia <3,4,5>}
+
+Una \textit{transformada de distancia con pesos} 3D es una transformada de distancia donde la distancia entre dos vóxeles es una constante que depende de su relación de vecindad. Se denota $\langle d_c,d_a,d_v \rangle$, donde $d_c$ es la distancia entre dos vóxeles que comparten una cara, $d_a$ es la distancia entre dos vóxeles que comparten una arista y $d_v$ es la distancia entre dos vóxeles que comparten un vértice. Para imágenes 2D se definen y denotan de manera equivalente.
+
+La idea básica de las transformadas de distancia con pesos es aproximar la transformada de distancia euclidiana, simplificando al mismo tiempo los cálculos. La transformada de distancia con pesos que interesa para este algoritmo es la $\langle 3,4,5 \rangle$. 12\% 
+
+\subsection{Centros de bolas maximales en la transformada de distancia <3,4,5>}
+
+\subsection{El \textit{skeleton} como lugar geométrico}
+
+Hablar del skeleton como el lugar geométrico del centro de las cbm y por que la 345 es mejor que le euclidiana.
+
+12 por ciento de diferencia con la euclidiana \cite{borgefors1996digital}
+
+\section{Visión general del algoritmo}
+
+\begin{algorithm}
+\caption{Skeletonización basada en distancia}
+\label{alg:ddskel}
+\begin{algorithmic}[1]
+\Function{SkeletonizacionBasadaEnDistancia}{$I$, $\theta_1$, $\theta_2$}
+	\State $td \gets TD345(I)$
+    \State $cbm \gets ExtraerCBM(td)$
+    \State $anclas \gets Filtrar(cbm)$
+    \State $pss\_casi\_delgado \gets ErosionarYConectar(anclas)$
+    \State $pss\_delgado \gets Adelgazar(pss\_casi\_delgado)$
+    \State $pss \gets Podar(pss\_delgado, \theta_1, \theta_2)$ \label{ddprune1}
+    \State $vc \gets ClasificarVoxeles(pss)$
+    \State $tdd \gets TD345Delimitada(pss, vc)$
+    \State $cbm\_pss \gets ExtraerCBM(pss, tdd)$
+    \State $anclas\_pss \gets Filtrar(cbm\_pss)$
+    \State $skeleton\_casi\_delgado \gets Erosionar(PSS, anclas\_pss)$
+    \State $skeleton \gets Adelgazar(skeleton\_casi\_delgado)$
+    \State $skeleton \gets Podar(skeleton, \theta_1, \theta_2)$ \label{ddprune2}
+    \State \Return $skeleton$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Este algoritmo tiene muchos pasos. En la siguiente sección se detalla cada línea del pseudocódigo anterior.
+
+\section{Descripción detallada de la implementación}
+
+\subsection{Parámetros}
+
+\begin{algorithm}[H]
+\addtocounter{algorithm}{-1}
+\caption{Parte 1}
+\begin{algorithmic}[1]
+\Function{SkeletonizacionBasadaEnDistancia}{$I$, $\theta_1$, $\theta_2$}
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+
+Además de la imagen de entrada $I$, este algoritmo recibe los parámetros numéricos $\theta_{1}$ y $\theta_{2}$, que permiten calibrar el nivel de detalle del \textit{skeleton}. Puede observarse que ambos parámetros aparecen en las líneas \ref{ddprune1} y \ref{ddprune2} del pseudocódigo. Se trata de umbrales que determinan la eliminación de ramas poco significativas. Su significado se detalla  en la Sección \ref{ssec:prune1}, donde se describe la primera poda del \textit{skeleton}.
+
+\subsection{Cálculo de la transformada de distancia <3,4,5>}
+
+\begin{algorithm}[H]
+\caption{Parte 2}
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\State $TD \gets TD345(I)$
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+
+Para calcular la transformada $<3,4,5>$ se implementó el algoritmo descrito en \cite{borgefors1996digital}. Este algoritmo permite calcular cualquier transformada de distancia con pesos en tiempo lineal respecto al número de vóxeles de la imagen. La imagen es recorrida dos veces, propagando los costos mínimos desde esquinas opuestas en cada pasada. En siguiente pseudocódigo se muestra este algoritmo.
+
+\begin{algorithm}[H]
+\caption{Cálculo de la transformada de distancia $<3,4,5>$}
+\label{alg:ddskel}
+\begin{algorithmic}[1]
+\Function{TD345}{$I$}
+	\State $td \gets Ceros(I)$
+	\For{$i \gets 1, filas$} \Comment{Recorrido hacia adelante}
+	\For{$j \gets 1, columnas$}
+	\For{$k \gets 1, capas$}
+    	\If{$I_{i,j,k} = 1$}
+        	\State $td_{i,j,k} \gets \min\limits_{(p,q,r) \in V_F}{td_{p,q,r} + d_n}$
+        \EndIf
+    \EndFor
+    \EndFor
+    \EndFor
+	\For{$i \gets filas, 1$} \Comment{Recorrido hacia atrás}
+	\For{$j \gets columnas, 1$}
+	\For{$k \gets capas, 1$}
+    	\If{$I_{i,j,k} = 1$}
+        	\State $td_{i,j,k} \gets \min\limits_{(p,q,r) \in V_B}{td_{p,q,r} + d_n}$
+        \EndIf
+    \EndFor
+    \EndFor
+    \EndFor
+    \State $ReemplazarValoresEquivalentes(td)$
+    \State \Return $td$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+El primer recorrido parte desde la esquina donde comienzan los índices en la implementación. Para cada vóxel de objeto $v$, $V_F(v)$ es el subconjunto ya recorrido de $V_{26}(v)$. $td(v)$ se calcula como el mínimo de tomar los valores de $td$ para ese conjunto y sumarles el peso $d_n$ correspondiente a la distancia local; por ejemplo, hay que sumar 5 a los vecinos que compartan solo un vértice con $v$. El segundo recorrido se efectúa en orden inverso. La única diferencia con el primer recorrido es que $V_B(v)$ contiene además el valor calculado para $v$ en el primer recorrido. Es decir, teniendo el largo del camino encontrado en el primer recorrido, el segundo recorrido verifica si existía un camino más corto partiendo desde el lado opuesto de la imagen.
+
+Por último, la función $ReemplazarValoresEquivalentes()$ del final del algoritmo simplemente sustituye todos los valores 3 de la transformada por 1. Este reemplazo permite la identificación correcta de máximos locales cercanos a los bordes \cite{arcelli1988finding}.
+
+\subsection{Extracción de CBM}
+
+La transformada de distancia euclidiana
+
+\begin{algorithm}[H]
+\caption{Parte 3}
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\State $CBM \gets ExtraerCBM(I)$
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+
+
+
+\subsection{Obtención de puntos ancla para el \textit{skeleton}}
+
+\begin{algorithm}[H]
+\caption{Parte 4}
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\State $anclas \gets Filtrar(CBM)$
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Obtención del PSS casi delgado}
+
+\begin{algorithm}[H]
+\caption{Parte 5}
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\State $PSSCasiDelgado \gets ErosionarYConectar(anclas)$
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Adelgazamiento del PSS}
+
+\begin{algorithm}[H]
+\caption{Parte 6}
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\State $PSSDelgado \gets Adelgazar(PSSCasiDelgado)$
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Poda del PSS} \label{ssec:prune1}
+
+\begin{algorithm}[H]
+\caption{Parte 7}
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\State $PSS \gets Podar(PSSDelgado, \theta_1, \theta_2)$ \label{ddprune1}
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Clasificación de vóxeles del PSS}
+
+\begin{algorithm}[H]
+\caption{Parte 8}
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\State $VC \gets ClasificarVoxeles(PSS)$
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Cálculo de la transformada de distancia <3,4,5> del PSS}
+
+\begin{algorithm}[H]
+\caption{Parte 9}
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\State $TDD \gets TD345Delimitada(PSS, VC)$
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsection{Final}
+
+\begin{algorithm}[H]
+\caption{Parte 10}
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+    \State $CBMPSS \gets ExtraerCBM(PSS, TDD)$
+    \State $anclasPSS \gets Filtrar(CBMPSS)$
+    \State $skeletonCasiDelgado \gets Erosionar(PSS, anclasPSS)$
+    \State $skeleton \gets Adelgazar(skeletonCasiDelgado)$
+    \State $skeleton \gets Podar(skeleton, \theta_1, \theta_2)$ \label{ddprune2}
+    \State \Return $skeleton$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+no dice que hay que marcar como infinito la dt en los voxeles de fondo
+
+da dos definiciones contradictorias para los core

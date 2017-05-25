@@ -1,5 +1,16 @@
 \ProvidesClass{templates/uchile-tesis}
 
+% Esto arreglaba el < y >
+\usepackage[T1]{fontenc}
+
+% Para fijar las cosas flotantes
+\usepackage{float}
+
+% Para poner teoremas
+\usepackage{amsthm}
+\newtheorem{prop}{Lema}
+\newtheorem{theorem}{Teorema}
+
 %  Tesis se parace mucho a un report
 \LoadClass[11pt]{report}
 
@@ -21,6 +32,10 @@
 \usepackage[spanish, english, latin]{babel}
 \usepackage{blindtext}
 \selectlanguage{spanish}
+
+% ALGORITMIX
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
 \PrerenderUnicode{áéíóúÁÉÍÓÚüÜ}
 \decimalpoint
