@@ -1,9 +1,11 @@
 \chapter{El \textit{skeleton} en biología}
 \label{ch:metrics}
 
-Según lo señalado en el Capítulo \ref{ch:introduction}, toda comparación de algoritmos de cálculo del \textit{skeleton} debe hacerse en cuanto al uso del \textit{skeleton} en alguna aplicación específica. Este capítulo es una revisión de la aplicación del \textit{skeleton} que motiva este trabajo de tesis.
+no leas este capítulo
 
+De acuerdo a lo señalado en el Capítulo \ref{ch:introduction}, toda comparación de algoritmos de cálculo del \textit{skeleton} debe hacerse en el contexto de alguna aplicación específica. Ha llegado el momento de hablar sobre las aplicaciones del \textit{skeleton} que motivan este trabajo de tesis. El rol del \textit{skeleton} en estas aplicaciones da origen a las métricas de comparación que se usan para medir el desempeño de los algoritmos presentados en los capítulos previos.
 
+\section{El \textit{skeleton} en el análisis de neuronas}
 
 Sacar la justificación de aquí:
 Neuromantic – from semi-manual to semi-automatic reconstruction of neuron morphology
@@ -35,7 +37,13 @@ Usan una implementación del algoritmo de thinning de \cite{lee1994building} en 
 
 Además en algunos papers se comparan con otros algoritmos, indicando las cosas que importan, como el largo promedio de las neuritas. sacar de aqui la justificacion
 
-\subsection{Métricas de comparación}
+\subsection{El \textit{skeleton} en los retículos}
+
+\subsection{Otras aplicaciones en biología}
+
+
+
+\section{Métricas de comparación}
 
 El \textit{skeleton} puede verse como un grafo no dirigido \cite{bai2008path}. Tomando esta idea, propondremos métricas provenientes en su mayoría de la teoría de grafos. Separaremos los objetos en dos tipos: objetos con túneles \cite{svensson2003finding} y objetos sin túneles. Las métricas dependerán del tipo de objeto, notando que el \textit{skeleton} de un objeto con túneles y el de uno sin túneles se parecen a un grafo cíclico y a un árbol respectivamente.
 

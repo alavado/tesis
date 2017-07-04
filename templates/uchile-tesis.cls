@@ -6,6 +6,9 @@
 % Para fijar las cosas flotantes
 \usepackage{float}
 
+% Para no celilsadas
+\usepackage{mathtools}
+
 % Para poner teoremas
 \usepackage{amsthm}
 \newtheorem{prop}{Lema}

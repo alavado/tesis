@@ -16,7 +16,7 @@ Dado un objeto siendo atravesado por un frente de propagación, sea $\boldsymbol
 \end{equation}
 
 \noindent
-donde $f$ es la rapidez constante de propagación y $\boldsymbol{n}$ es el vector unitario normal interior a $\boldsymbol{C}$. Esta ecuación dice que $\boldsymbol{C}(t + \epsilon)$ se obtiene si todos los puntos de $\boldsymbol{C}(t)$ se mueven hacia el interior de $\boldsymbol{C}(t)$ con rapidez $f$ durante un tiempo $\epsilon$. En 2D es denominada \textit{flujo de acortamiento de curvas}. Su validez se sostiene para el caso 3D, donde describe la contracción de una superficie.
+donde $f$ es la rapidez constante de propagación y $\boldsymbol{n}$ es el vector unitario normal interior a $\boldsymbol{C}$. Esta ecuación dice que, para un $\epsilon$ muy pequeño, $\boldsymbol{C}(t + \epsilon)$ se obtiene si todos los puntos de $\boldsymbol{C}(t)$ se mueven hacia el interior de $\boldsymbol{C}(t)$ con rapidez $f$ durante un tiempo $\epsilon$. En 2D es denominada \textit{flujo de acortamiento de curvas}. Su validez se sostiene para el caso 3D, donde describe la contracción de una superficie.
 
 No existe un método analítico que sea capaz de detectar los puntos de choque directamente a partir de la ecuación (5.1), aunque sí es posible encontrarlos mediante una simulación numérica \cite{sethian1996fast}. Un enfoque más eficiente comienza por mostrar que esta ecuación en un caso particular de la \textit{ecuación de la eikonal}.
 
@@ -69,9 +69,9 @@ En general, como se demuestra en \cite{shankar2012principles}, el lagrangiano pa
 \end{equation}
 
 \noindent
-donde $\boldsymbol{\mathrm{q}} = (q_1, q_2,... ,q_n)$ representa el conjunto de $n$ coordenadas independientes (o \textit{grados de libertad}) que determinan la posición de la partícula, y $\boldsymbol{\mathrm{\dot{q}}} = (\dot{q_1}, \dot{q_2},... , \dot{q_n})$ su velocidad. La ecuación (5.9) es central en mecánica, pues permite obtener las ecuaciones del movimiento simplemente derivando el lagrangiano.
+donde $\boldsymbol{\mathrm{q}} = (q_1, q_2,... ,q_n)$ representa el conjunto de $n$ coordenadas independientes (o \textit{grados de libertad}) que determinan la posición de la partícula, y $\boldsymbol{\mathrm{\dot{q}}} = (\dot{q_1}, \dot{q_2},... , \dot{q_n})$ su velocidad. La ecuación (4.9) es central en mecánica, pues permite obtener las ecuaciones del movimiento simplemente derivando el lagrangiano.
 
-La ecuación de Euler-Lagrange es un ejemplo para demostrar que las ecuaciones de la mecánica lagrangiana se sostienen para un sistema de coordenadas arbitrario. Sin embargo, en el contexto de esta tesis bastará con $\boldsymbol{\mathrm{q}} = (x, y, z)$.
+La ecuación de Euler-Lagrange demuestra que las ecuaciones de la mecánica lagrangiana se sostienen para un sistema de coordenadas arbitrario. Sin embargo, en el contexto de esta tesis bastará con $\boldsymbol{\mathrm{q}} = (x, y, z)$.
 
 \subsection{El formalismo hamiltoniano}
 
@@ -141,3 +141,16 @@ Las ecuaciones (5.12) y (5.13) se conocen como las \textit{ecuaciones canónicas
 
 \section{Detalle de la implementación}
 
+\section{Resultados}
+
+\begin{figure}[ht]\centering
+\includegraphics[width=1\linewidth]{images/siddiqi-15_test_models}
+\caption{Resultados del algoritmo de Siddiqi et al. para las imágenes de prueba, con $\tau = -15$}
+\label{fig:siddiqi-15_test_models}
+\end{figure}
+
+\begin{figure}[ht]\centering
+\includegraphics[width=1\linewidth]{images/siddiqi-18_test_models}
+\caption{Resultados del algoritmo de Siddiqi et al. para las imágenes de prueba, con $\tau = -18$}
+\label{fig:siddiqi-18_test_models}
+\end{figure}

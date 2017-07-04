@@ -1,28 +1,36 @@
 \chapter{Definiciones y Notación}
 \label{ch:defs}
 
-El objetivo de este capítulo es presentar al lector las notaciones y conceptos que se usarán en los capítulos posteriores.
+El objetivo de este capítulo es presentar al lector los conceptos y notaciones que se usarán en los capítulos posteriores.
 
-La inclusión de este capítulo se considera necesaria no .... En primer lugar, la topología digital es . En segundo lugar, con la esperanza de evitar la ambigüedad en las definiciones presente en la literatura de topología digital. Por ejemplo, algunos autores incluyen a los elementos dentro de sus vecindades \cite{cornea2007curve}, mientras que otros los dejan fuera \cite{lam1992thinning}.
+La inclusión de este capítulo se considera además pertinente para evitar cualquier la ambigüedad en las definiciones. Esta ambigüedad es latente en la literatura de topología digital. Por ejemplo, algunos autores incluyen a los elementos dentro de sus vecindades \cite{cornea2007curve}, mientras que otros los dejan fuera \cite{lam1992thinning}.
 
-Desde este capítulo en adelante, salvo cuando se indique algo distinto, la palabra \textit{algoritmo} se usa para referirse a un algoritmo que extrae el \textit{skeleton}.
+Este capítulo comprende los casos 2D y 3D en igual medida. Sin embargo, los algoritmos de cálculo del \textit{skeleton} implementados operan sobre imágenes 3D, por lo que en adelante los conceptos 2D se dejarán de lado. Sin embargo, se incluyen no solo por completitud, sino para facilitar la explicación y comprensión de sus contrapartes tridimensionales.
+
+Desde este capítulo en adelante, salvo cuando se indique expresamente algo distinto, la palabra \textit{algoritmo} se usa siempre para referirse a un algoritmo que calcula el \textit{skeleton}.
 
 \section{Estructura de los datos}
 
-Los algoritmos implementados operan sobre imágenes binarias discretas. Esto quiere decir que su entrada y salida son matrices donde cada elemento vale 0 o 1. En adelante, el término \textit{imagen} se usa para referirse a esta representación matricial. En la literatura esta representación es calificada de implícita \cite{bloomenthal1997introduction}, porque las figuras son construidas a partir de un muestreo discreto.
+Los algoritmos implementados operan sobre imágenes binarias discretas. Esto quiere decir que su entrada y salida son matrices donde cada elemento vale 0 o 1. En adelante, el término \textit{imagen} se usa para referirse a esta representación matricial. En la literatura esta representación es a veces referida como implícita \cite{bloomenthal1997introduction}. 
+
+Lo anterior significa que las figuras son construidas a partir de un muestreo binario. La manera de efectuar este muestreo en la práctica (el proceso llamado \textit{segmentación}, donde se decide si un punto pertenece o no a la figura) está fuera del alcance de esta tesis, pero en el Capítulo \ref{ch:results} se describe la manera como se hace para la aplicación que motiva este trabajo de tesis.
 
 El \textit{objeto} de una imagen es el conjunto de sus elementos que valen 1. El \textit{fondo} es el conjunto de sus elementos que valen 0. El \textit{skeleton} es el objeto de la imagen que un algoritmo produce como salida.
 
 Si una imagen es de dos dimensiones (2D), los elementos que la constituyen se llaman \textit{píxeles}. Cuando es de tres dimensiones (3D), sus elementos se llaman \textit{vóxeles}. Los \textit{píxeles de objeto} son los píxeles que pertenecen al objeto; es decir, que valen 1. Los \textit{píxeles de fondo} son los píxeles que pertenecen al fondo, cuyo valor es 0. Los \textit{vóxeles de objeto} y \textit{vóxeles de fondo} se definen respectivamente de manera análoga. 
-
-\todo{agregar ejemplo de imagen?}
 
 \section{Conceptos de conectividad 2D}
 
 \subsection{Relaciones de vecindad}
 En una imagen 2D, cada píxel $p$ tiene exactamente 8 vecinos. Estos son los píxeles que rodean a $p$. Interpretando la imagen 2D como una grilla o celosía regular, donde cada píxel es un cuadrado, los vecinos de $p$ son los píxeles que comparten al menos un vértice con $p$. El conjunto de píxeles formado por $p$ y sus 8 vecinos se denomina la \textit{8-vecindad de $p$}. Es denotado $V_{8}(p)$. Además, se dice que $p$ es un \textit{8-vecino} de los demás elementos de $V_{8}(p)$.
 
-Un tipo de adyacencia más estricto considera solo los vecinos de $p$ que comparten una arista (o, equivalentemente, dos vértices) con $p$. Desde un punto de vista matricial, estos son los vecinos de $p$ que están en la misma fila o columna que $p$. Exactamente 4 píxeles satisfacen esta condición. Entonces, se dice que estos píxeles son \textit{4-vecinos} de $p$. Unidos a $p$, forman la \textit{4-vecindad} de $p$, denotada $V_{4}(p)$. 
+Un tipo de adyacencia más estricto considera solo los vecinos de $p$ que comparten una arista (o, equivalentemente, dos vértices) con $p$. Desde un punto de vista matricial, estos son los vecinos de $p$ que están en la misma fila o columna que $p$. Exactamente 4 píxeles satisfacen esta condición. Entonces, se dice que estos píxeles son \textit{4-vecinos} de $p$. Unidos a $p$, forman la \textit{4-vecindad} de $p$, denotada $V_{4}(p)$.
+
+\begin{figure}[ht]\centering
+\includegraphics[width=0.66\linewidth]{images/2dneighborhoods}
+\caption{Los 2 tipos de vecindades de un píxel $p$: $V_{4}(v)$ y $V_{8}(v)$}
+\label{fig:2dneighborhoods}
+\end{figure}
 
 Es claro que $V_{4}(p) \subset V_{8}(p)$. Por consiguiente, si dos píxeles son 4-vecinos también son 8-vecinos. Además, todas las relaciones de vecindad son conmutativas. Si $p$ es $n$-vecino de $q$, entonces $q$ es $n$-vecino de $p$.
 
@@ -33,8 +41,6 @@ Un \textit{8-camino} es una sucesión de píxeles $(p_{0}, p_{1}, \ldots, p_{k})
 Análogamente, dos píxeles $p$ y $q$ están \textit{4-conectados} si existe un \textit{4-camino} que empieza en $p$ y termina en $q$.
 
 Estas nociones de conectividad son fáciles de interpretar. Dos píxeles de objeto $p$ y $q$ están 8-conectados si es posible ir desde $p$ hasta $q$ moviéndose solamente entre 8-vecinos de valor 1. De igual modo, $p$ y $q$ están 4-conectados cuando esta secuencia de movimientos es posible sin efectuar movimientos diagonales.
-
-\todo{agregar diagrama de las conectividades}
 
 \section{Conceptos de conectividad 3D}
 
@@ -49,7 +55,7 @@ Es conveniente destacar que $V_{6}(v) \subset V_{18}(v) \subset V_{26}(v)$. Por 
 
 \begin{figure}[ht]\centering
 \includegraphics[width=0.8\linewidth]{images/3dneighborhoods}
-\caption{Los 3 tipos de vecindades de un vóxel $v$: $V_{26}(v)$, $V_{6}(v)$ y $V_{18}(v)$.}
+\caption{Los 3 tipos de vecindades de un vóxel $v$: $V_{26}(v)$, $V_{6}(v)$ y $V_{18}(v)$}
 \label{fig:3dneighborhoods}
 \end{figure}
 
@@ -63,11 +69,11 @@ Se dice que dos vóxeles $v$ y $w$ están \textit{26-conectados} si existe un 26
 
 \subsection{Componentes conexas}
 
-Dentro de una imagen, una \textit{componente $n$-conexa}, con $n \in \{4, 8\}$ si la imagen es 2D y $n \in \{6, 18, 26\}$ si es 3D, es un conjunto no vacío de píxeles o vóxeles que satisface dos condiciones. En primer lugar, cada elemento del conjunto está $n$-conectado con todos los demás. En segundo lugar, ningún elemento del conjunto está $n$-conectado con algún elemento fuera del conjunto. Es decir que, por ejemplo, dado un vóxel $v$, la componente $n$-conexa que contiene a $v$ es el conjunto maximal de vóxeles $n$-conectados a $v$. Si un conjunto no es $n$-conexo, se dice que es \textit{$n$-disconexo}.
+Dentro de una imagen, una \textit{componente $n$-conexa}, con $n \in \{4, 8\}$ si la imagen es 2D y $n \in \{6, 18, 26\}$ si es 3D, es un conjunto no vacío de píxeles o vóxeles que satisface dos condiciones. En primer lugar, cada elemento del conjunto está $n$-conectado con todos los demás. En segundo lugar, ningún elemento del conjunto está $n$-conectado con algún elemento fuera del conjunto. Es decir que, usando como ejemplo el caso 3D, dado un vóxel $v$, la componente $n$-conexa que contiene a $v$ es el conjunto maximal de vóxeles $n$-conectados a $v$. Si un conjunto no es $n$-conexo, se dice que es \textit{$n$-disconexo}.
 
 \subsection{Condición básica para la preservación topológica} \label{ssec:fakehomotopy}
 
-En la Sección \ref{sec:skelprops} se ha mencionado como requisito fundamental para la correctitud de un algoritmo el que la imagen de salida sea homotópica con la imagen de entrada. En la práctica, esta preservación topológica se traduce en que la imagen de salida debe tener el mismo número de componentes conexas de objeto y de fondo que la imagen de entrada \cite{saha1994topology}. Estos números dependen del tipo de conectividad que se escoja. Por ejemplo, la imagen de la Figura \ref{fig:8connectedcross} tiene 1 componente conexa de objeto y 1 componente conexa de fondo, independientemente a si se verifica la 4-conectividad o la 8-conectividad. Sin embargo, cambiar el valor del píxel marcado a 0 no altera el número de componentes 8-conexas, pero sí el de 4-conexas. Tras el cambio, la imagen presentaría 4 componentes 4-conexas de objeto y 2 componentes 4-conexas de fondo. Por lo tanto, un algoritmo que cambiara el valor del píxel rojo a 0 cumpliría con la propiedad homotópica si se usa la 8-conectividad y simultáneamente no la cumpliría si se usa la 4-conectividad.
+En la Sección \ref{sec:skelprops} se ha mencionado como requisito fundamental para la correctitud de un algoritmo el que la imagen de salida sea homotópica con la imagen de entrada. En la práctica, esta preservación topológica se traduce en que la imagen de salida debe tener el mismo número de componentes conexas de objeto y de fondo que la imagen de entrada \cite{saha1994topology}. Estos números dependen del tipo de conectividad que se escoja. Por ejemplo, la imagen de la Figura \ref{fig:8connectedcross} tiene 1 componente conexa de objeto y 1 componente conexa de fondo, independientemente de si se verifica la 4-conectividad o la 8-conectividad. Sin embargo, cambiar el valor del píxel marcado a 0 no altera el número de componentes 8-conexas, pero sí el de 4-conexas. Tras el cambio, la imagen quedaría con 4 componentes 4-conexas de objeto y 2 componentes 4-conexas de fondo. Por lo tanto, un algoritmo que cambiara el valor del píxel rojo a 0 cumpliría con la propiedad homotópica si se usa la 8-conectividad y simultáneamente no la cumpliría si se usa la 4-conectividad.
 
 \begin{figure}[ht]\centering
 \includegraphics[width=0.35\linewidth]{images/8connectedcrossv2}
@@ -122,11 +128,11 @@ El Algoritmo \ref{alg:dfscc}, implementado en esta tesis, corresponde a la búsq
 
 \subsection{Noción de simplicidad}
 
-Un píxel o vóxel de objeto es \textit{simple} si cambiar su valor a 0 (o \textit{eliminarlo}) no altera la topología de la imagen. Para saber si un elemento es simple, se podría calcular el número de componentes conexas en la imagen antes y después de eliminarlo, usando por ejemplo el Algoritmo \ref{alg:dfscc}, y revertir la eliminación si ese número cambia. Sin embargo, existen criterios más eficientes, capaces de determinar si un elemento es simple revisando únicamente su vecindad. A continuación se describen los métodos implementados para esta tesis.
+Un píxel o vóxel de objeto es \textit{simple} si cambiar su valor a 0 (o \textit{eliminarlo}) no altera la topología de la imagen. Para saber si un elemento es simple, se podría calcular el número de componentes conexas en la imagen antes y después de eliminarlo, usando por ejemplo el Algoritmo \ref{alg:dfscc}, y revertir la eliminación si ese número cambia. Sin embargo, existen métodos más eficientes, capaces de determinar si un elemento es simple revisando nada más que su vecindad. A continuación se describen los métodos implementados para esta tesis.
 
 \subsection{Simplicidad en 2D}
 
-Precisando lo señalado anteriormente, un píxel de objeto es simple si eliminarlo no cambia el número de componentes 8-conexas de objeto ni el número de componentes 4-conexas de fondo. En este sentido, como fue demostrado en \cite{stefanelli1971some}, si un algoritmo elimina solamente píxeles simples efectivamente preserva la topología de la imagen. En otras palabras, un algoritmo que solamente elimine píxeles simples siempre cumplirá con la propiedad homotópica. \todo{poner codigos de colores en pixeles y estandarizar imagenes}
+Precisando lo señalado anteriormente, un píxel de objeto es simple si eliminarlo no cambia el número de componentes 8-conexas de objeto ni el número de componentes 4-conexas de fondo. En este sentido, como fue demostrado en \cite{stefanelli1971some}, si un algoritmo elimina solamente píxeles simples efectivamente preserva la topología de la imagen. En otras palabras, un algoritmo que solamente elimine píxeles simples siempre cumplirá con la propiedad homotópica.
 
 \begin{figure}[ht]\centering
 \includegraphics[width=0.35\linewidth]{images/2dsimpletestimageextract}
@@ -151,6 +157,7 @@ Un píxel $p$ es simple si su grafo de vecindad es un árbol.
 Un criterio directo para determinar si el grafo de vecindad es un árbol consiste en comprobar si su característica de Euler, el número de vértices menos el número de aristas, es igual a 1. La Figura \ref{fig:2dsimpleexamples} muestra ejemplos donde $p$ es simple y donde no.
 
 \subsection{Simplicidad en 3D}
+\label{ssec:3Dsimplicity}
 
 Además de componentes conexas, las imágenes 3D pueden presentar un elemento topológico adicional. La Figura \ref{fig:tunnelexample} ilustra un ejemplo. Difíciles de definir y encontrar \cite{svensson2003finding}, los  \textit{túneles} también deben considerarse al evaluar la preservación topológica de un algoritmo \cite{cornea2007curve}. Informalmente, un túnel es un agujero que atraviesa un objeto sin desconectarlo. Una definición formal de túnel puede encontrarse en \cite{kong1989digital2}, pero no es necesaria para esta tesis. Solo es preciso considerar que la eliminación de un vóxel puede originar un túnel, alterando con ello la topología de la imagen sin cambiar el número de componentes conexas. Por lo tanto, un algoritmo 3D satisfará la propiedad homotópica si el \textit{skeleton} que calcula preserva el número de componentes 26-conexas de objeto, el número de componentes 6-conexas de fondo y además el número de túneles de la imagen original \cite{Lieutier20041029}.
 
@@ -172,19 +179,42 @@ Luego, se cumple el siguiente teorema:
 Un vóxel $v$ es simple ssi $C(v) = 1$ y $\bar{C}(v) = 1$.
 \end{theorem}
 
-Tener en cuenta la noción de punto  simple al diseñar un algoritmo basta para satisfacer la propiedad homotópica. Como se ha dicho antes, la topología podría conservarse con imponer la restricción de eliminar exclusivamente puntos simples. Sin embargo, esta estrategia no asegura en ninguna medida el resto de las propiedades del \textit{skeleton}. Los píxeles de los extremos de una línea, por ejemplo, son simples, pero eliminarlos significaría perder información de la forma de la figura (es más, la línea podría ser transformada en un punto aplicando sucesivamente este criterio). Por lo tanto, hace falta una noción adicional.
+Tener en cuenta la noción de punto simple al diseñar un algoritmo basta para satisfacer la propiedad homotópica. Como se ha dicho antes, la topología podría conservarse con imponer la restricción de eliminar exclusivamente puntos simples. Sin embargo, esta estrategia no asegura en ninguna medida el resto de las propiedades del \textit{skeleton}. Los píxeles de los extremos de una línea, por ejemplo, son simples, pero eliminarlos significaría perder información de la forma de la figura (es más, la línea podría ser transformada en un punto aplicando sucesivamente este criterio).
 
 \begin{figure}[ht]\centering
 \includegraphics[width=0.7\linewidth]{images/voxel_types}
-\caption{Principales tipos de vóxeles.}
+\caption{Principales tipos de vóxeles}
 \label{fig:voxeltypes}
 \end{figure}
 
 \subsection{Píxeles y vóxeles de término}
 
-Un \textit{píxel de término} es un píxel de objeto que tiene exactamente 1 píxel de objeto adicional en su 8-vecindad. Similarmente, un \textit{vóxel de término} es un vóxel de objeto que tiene exactamente 1 vóxel de objeto adicional en su 26-vecindad.
+Un \textit{píxel de término} es un píxel de objeto que tiene exactamente 1 píxel de objeto 8-vecino. Similarmente, un \textit{vóxel de término} es un vóxel de objeto que tiene exactamente 1 vóxel de objeto 26-vecino.
 
-El que un elemento sea de término significa que está en el extremo de una línea. En principio, todas las líneas son necesarias para que el \textit{skeleton} exprese la forma del objeto original con fidelidad, por lo que un algoritmo debería preservar todos los elementos de término. Sin embargo, algunas líneas pueden ser poco relevantes. Un algoritmo debe ser cuidadoso al decidir si un elemento de término debe ser eliminado.
+El que un elemento sea de término significa que está en el extremo de una línea. En principio, todas las líneas son necesarias para que el \textit{skeleton} exprese la forma del objeto original con fidelidad, por lo que un algoritmo debería preservar todos los elementos de término. No obstante, algunas líneas pueden ser poco relevantes, por lo que todo algoritmo debe obedecer algún criterio para decidir si un elemento de término debe ser eliminado. En cuán relajado sea este criterio radica en qué medida el resultado producido por un algoritmo favorecerá la propiedad de reconstructibilidad (en perjuicio de otras propiedades, como la suavidad y la robustez).
 
-\section{Nota sobre el preprocesamiento} \label{sec:noteInfinity}
-Antes se señaló que, por ejemplo, en una imagen 2D cada píxel tiene exactamente 8 vecinos. No obstante, es claro que esta afirmación no se sostiene en la práctica. Las imágenes tienen dimensiones finitas en el computador, es decir que los píxeles de su contorno tienen menos de 8 vecinos (o menos de 26 vecinos para imágenes 3D). Para evitar complicaciones en el código debido a casos de este estilo, dentro de cada algoritmo las imágenes son preprocesadas, adosándoles una capa de píxeles de fondo como relleno. La forma común de referirse a esto es decir que se aplica un \textit{padding} de dimensión 1. Estos píxeles artificiales se ignoran cada vez que se recorre la imagen, y son removidos antes de producir la salida del algoritmo, restaurando así las dimensiones originales de la entrada.
+\section{Sobre los datos de prueba}
+
+En los capítulos posteriores se usarán algunas imágenes 3D para ilustrar los resultados de cada algoritmo. Estas imágenes fueron obtenidas voxelizando mallas de superficie en formato OFF pertenecientes a la base de datos Princeton Shape Benchmark \cite{shilane2004princeton}. La voxelización se hizo con el programa binvox de Patrick Min \cite{patrick2011binvox}, usando el comando:
+
+\begin{center}
+\texttt{binvox -d 128 128 128 <ruta malla original> <ruta archivo de salida>}
+\end{center}
+
+Ejecutar este comando produce un archivo de vóxeles en un formato especial para binvox. La especificación y lectura en MATLAB de este formato se detalla en los apéndices. El parámetro \texttt{-d 128 128 128} indica las dimensiones del archivo de vóxeles, es decir, la resolución del muestreo de la malla. Estos valores se escogieron por ser los utilizados para mostrar los resultados en el artículo \cite{arcelli2011distance}, que corresponde al tercer algoritmo implementado. La ruta del archivo de salida es relativa a la ruta de la malla original.
+
+En la Figura \ref{fig:test_models_psb} se enlistan las imágenes de prueba que se usarán a lo largo de esta tesis, junto con su código de identificación en la base de datos Princeton Shape Benchmark.
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\linewidth]{images/test_models_psb}
+\caption{Imágenes de prueba obtenidas voxelizando mallas de la Princeton Shape Benchmark Database}
+\label{fig:test_models_psb}
+\end{figure}
+
+Adicionalmente, se incluyeron 6 imágenes de la base de datos Aim@Shape en el conjunto de pruebas \cite{saboret2007laurent} que aparecen también en \cite{arcelli2011distance}. Esta base de datos actualmente no se encuentra disponible en internet. Los archivos fueron proporcionados por Gabriella Sanniti di Baja, coautora del algoritmo del Capítulo \ref{ch:arcelli}, en formato VOL. En los apéndices también se incluye la especificación de este formato y su lectura en MATLAB.
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.8\linewidth]{images/test_models_aas}
+\caption{Imágenes de prueba de la base de datos Aim@Shape}
+\label{fig:test_models_aas}
+\end{figure}
